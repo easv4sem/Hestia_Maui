@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:vm="clr-namespace:Hestia_Maui.ViewModels"
+			 x:Class="Hestia_Maui.Views.UrlOrganisationPage"
+			 x:DataType="vm:UrlOrganisationViewModel">
+
+
+
+    <ContentPage.Content>
+        <VerticalStackLayout Spacing="0"
+                     Padding="20,0">
+
+            <VerticalStackLayout>
+                <Label Text="{Binding HeaderText}" FontSize="18" Margin="0,50,0,0"/>
+                <Label Text="{Binding LineText}" FontSize="35" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Margin="0,140,0,0">
+                <Label Text="{Binding LabelText}"/>
+                <StackLayout>
+                    <Entry Text="{Binding OrganisationUrl}" Placeholder="{Binding UrlPlaceholder}" Margin="0,10,0,0"/>
+                </StackLayout>
+            </VerticalStackLayout>
+
+
+            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="0,10,0,0">
+                <Button Text="{Binding BtnHelpText}" Command="{Binding HelpPressedCommand}" Margin="0,0,20,0" BackgroundColor="#F26C0E"
+                        WidthRequest="80" HeightRequest="50" />
+                <Button Text="{Binding BtnNextText}" Command="{Binding NextPressedCommand}" BackgroundColor="#F26C0E" 
+                        WidthRequest="80" HeightRequest="50"/>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+
+
+        
+    </ContentPage.Content>
+    
+</ContentPage>

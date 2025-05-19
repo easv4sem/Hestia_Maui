@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+	x:Class="Hestia_Maui.AppShell"
+	xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:local="clr-namespace:Hestia_Maui"
+	xmlns:views="clr-namespace:Hestia_Maui.Views"
+	Title="Hestia">
+
+    <!-- Internal pages – not shown in the flyout menu -->
+    <ShellContent 
+        Route="UrlOrganisationPage"
+        ContentTemplate="{DataTemplate views:UrlOrganisationPage}"
+        Shell.NavBarIsVisible="False" />
+
+    <ShellContent 
+        Route="SignInPage"
+        ContentTemplate="{DataTemplate views:SignInPage}"
+        Shell.NavBarIsVisible="False" />        
+
+    <!-- Flyout menu items -->
+    <FlyoutItem Title="Home" Icon="iconblank.png">
+        <ShellContent
+            Title="Home"
+            ContentTemplate="{DataTemplate views:HomePage}" 
+            Route="HomePage"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Devices" Icon="iconblank.png">
+        <ShellContent
+            Title="Devices:"
+            ContentTemplate="{DataTemplate views:DevicesPage}" 
+            Route="DevicesPage"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Add Device" Icon="iconblank.png">
+        <ShellContent
+            ContentTemplate="{DataTemplate views:AddDevicePage}" 
+            Route="AddDevicePage"/>
+    </FlyoutItem>
+
+    <FlyoutItem Title="Map" Icon="iconmap.png">
+        <ShellContent
+            Title="Map"
+            ContentTemplate="{DataTemplate views:MapPage}" 
+            Route="MapPage"/>
+    </FlyoutItem>
+
+    <!-- Logout button placed at the bottom of the flyout menu -->
+    <MenuItem
+        Text="Logout"
+        IconImageSource="iconblank.png"
+        IsDestructive="True"
+        Clicked="OnLogoutClicked" />
+
+    
+    
+</Shell>

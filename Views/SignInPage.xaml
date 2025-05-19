@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:vm="clr-namespace:Hestia_Maui.ViewModels"
+			 x:Class="Hestia_Maui.Views.SignInPage"
+			 x:DataType="vm:SignInViewModel">
+
+    <ContentPage.Content>
+        
+        <VerticalStackLayout Spacing="0"
+                         Padding="20,0">
+
+            <VerticalStackLayout>
+                <Label Text="{Binding HeaderText}" FontSize="18" Margin="0,50,0,0"/>
+                <Label Text="{Binding LineText}" FontSize="35" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Margin="0,100,0,0">
+                <Label Text="Email"/>
+                <StackLayout>
+                    <Entry Text="{Binding Email, Mode=TwoWay}" Placeholder="{Binding EmailPlaceholder}" Margin="0,10,0,0"/>
+                </StackLayout>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Margin="0,20,0,0">
+                <Label Text="Password"/>
+                <StackLayout>
+                    <Entry Text="{Binding Password, Mode=TwoWay}" Placeholder="{Binding PasswordPlaceholder}" Margin="0,10,0,0" IsPassword="True"/>
+                </StackLayout>
+            </VerticalStackLayout>
+
+
+            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="0,10,0,0">
+                <Button Text="{Binding BtnBackText}" Command="{Binding BackPressedCommand}" Margin="0,0,20,0" BackgroundColor="#F26C0E"
+                        WidthRequest="80" HeightRequest="50"/>
+                <Button Text="{Binding BtnLoginText}" Command="{Binding LoginCommand}" BackgroundColor="#F26C0E" 
+                        WidthRequest="80" HeightRequest="50"/>
+            </HorizontalStackLayout>
+
+            
+
+        </VerticalStackLayout>
+    </ContentPage.Content>
+    
+</ContentPage>
