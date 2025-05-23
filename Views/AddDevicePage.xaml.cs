@@ -14,18 +14,25 @@ public partial class AddDevicePage : ContentPage
     {
         base.OnAppearing();
 
-        // Adressens koordinater (fra tidligere)
+        // coordinates of the address
         var latitude = 54.9130415;
         var longitude = 9.77896211;
 
-        // Opret en Location baseret på de givne koordinater
+        // creates a Location object using the coordinates
         var location = new Location(latitude, longitude);
 
-        // Opret et MapSpan centreret på denne Location
+        // creates a MapSpan centered on the Location with a 1 km radius
         var mapSpan = MapSpan.FromCenterAndRadius(location, Distance.FromKilometers(1));
 
-        // Opdater kortet med den nye region
+        // moves the map view to the defined region
         HestiaMaps.MoveToRegion(mapSpan);
+
+        // Sets coordinates in the ViewModel
+        if (BindingContext is AddDeviceViewModel vm)
+        {
+            vm.LatitudeMaps = (float)latitude;
+            vm.LongitudeMaps = (float)longitude;
+        }
     }
 
 }

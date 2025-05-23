@@ -8,17 +8,57 @@
 
     <ContentPage.Content>
 
-        <VerticalStackLayout Spacing="0"
-              Padding="20,0">
+            <!-- Title -->
+            <Label Grid.Row="0"
+                   Text="{Binding PageText}"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   Margin="0,0,0,20" />
 
+            <!-- Entries -->
+            <VerticalStackLayout Grid.Row="1"
+                                 Spacing="2">
 
-            <Label Text="{Binding PageText}" FontSize="26" FontAttributes="Bold" Margin="0,10,0,40"/>
-            <Label Text="{Binding EntryHeador}" FontSize="14"/>
-            <Entry Text="{Binding IdText, Mode=TwoWay}" Placeholder="{Binding IdPlaceholder}" Margin="0,0,0,20"/>
+                <Label Text="{Binding EntryIdHeador}" 
+                       FontSize="14" />
+                
+                <Entry Text="{Binding IdText, Mode=TwoWay}"
+                       Placeholder="{Binding IdPlaceholder}" />
 
+                <Label Text="{Binding EntryNameHeador}" 
+                       FontSize="14" 
+                       Margin="0,20,0,0"/>
+                
+                <Entry Text="{Binding NameText, Mode=TwoWay}"
+                       Placeholder="{Binding NamePlaceholder}" />
+                
+            </VerticalStackLayout>
 
-            <maps:Map x:Name="HestiaMaps" IsShowingUser="True" HeightRequest="300" VerticalOptions="Start" Margin="0,0,0,20"/>
+            <!-- Map -->
+            <maps:Map x:Name="HestiaMaps"
+                      Grid.Row="2"
+                      IsShowingUser="True"
+                      VerticalOptions="FillAndExpand"
+                      HorizontalOptions="FillAndExpand" 
+                      Margin="0,20,0,20"/>
 
+            <!-- Buttons -->
+            <HorizontalStackLayout Grid.Row="3"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="End"
+                                   Spacing="20">
+
+                <Button Text="{Binding BtnCancelText}"
+                        Command="{Binding CancelPressedCommand}"
+                        BackgroundColor="#f67d22"
+                        WidthRequest="80" 
+                        HeightRequest="50"/>
+
+                <Button Text="{Binding BtnOkText}"
+                        Command="{Binding OkPressedCommand}"
+                        BackgroundColor="#f67d22"
+                        WidthRequest="80" 
+                        HeightRequest="50"/>
 
             <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
                 <Button Text="{Binding BtnCancelText}" Command="{Binding CancelPressedCommand}" Margin="0,0,20,0" BackgroundColor="#F26C0E"
@@ -27,8 +67,7 @@
                         WidthRequest="80" HeightRequest="50"/>
             </HorizontalStackLayout>
 
-
-        </VerticalStackLayout>
+        </Grid>
     </ContentPage.Content>
     
 </ContentPage>

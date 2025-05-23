@@ -19,29 +19,29 @@
         Shell.NavBarIsVisible="False" />        
 
     <!-- Flyout menu items -->
-    <FlyoutItem Title="Home" Icon="iconblank.png">
+    <FlyoutItem Title="Home" Icon="icon_home.png">
         <ShellContent
             Title="Home"
             ContentTemplate="{DataTemplate views:HomePage}" 
             Route="HomePage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="Devices" Icon="iconblank.png">
+    <FlyoutItem Title="Devices" Icon="icon_device.png">
         <ShellContent
             Title="Devices:"
             ContentTemplate="{DataTemplate views:DevicesPage}" 
             Route="DevicesPage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="Add Device" Icon="iconblank.png">
+    <FlyoutItem Title="Add Device" Icon="icon_add.png">
         <ShellContent
             ContentTemplate="{DataTemplate views:AddDevicePage}" 
             Route="AddDevicePage"/>
     </FlyoutItem>
 
-    <FlyoutItem Title="Map" Icon="iconmap.png">
+    <FlyoutItem Title="Map" Icon="icon_map.png">
         <ShellContent
-            Title="Map"
+            Title="Device Locations:"
             ContentTemplate="{DataTemplate views:MapPage}" 
             Route="MapPage"/>
     </FlyoutItem>
@@ -49,7 +49,7 @@
     <!-- Logout button placed at the bottom of the flyout menu -->
     <MenuItem
         Text="Logout"
-        IconImageSource="iconblank.png"
+        IconImageSource="icon_logout.png"
         IsDestructive="True"
         Clicked="OnLogoutClicked" />
 

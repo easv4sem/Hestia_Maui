@@ -12,11 +12,17 @@ public partial class AddDeviceViewModel : BaseViewModel
     public string pageText = "Add new device:";
     
     [ObservableProperty]
-    public string entryHeador = " Raspberry Pi ID:";
+    public string entryIdHeador = " Raspberry Pi ID:";
     
     [ObservableProperty]
     public string idPlaceholder = "AA:BB:CC:00:00:11";
     
+    [ObservableProperty]
+    public string entryNameHeador = " Device name:";
+
+    [ObservableProperty]
+    public string namePlaceholder = "Lottenhoi";
+
     [ObservableProperty]
     public string btnCancelText = "Cancel";
     
@@ -27,6 +33,17 @@ public partial class AddDeviceViewModel : BaseViewModel
     // two-way bound property: UI and ViewModel update each other
     [ObservableProperty]
     public string idText = "";
+
+    [ObservableProperty]
+    public string nameText = "";
+
+
+    // Coordinates for map location
+    [ObservableProperty]
+    private float latitudeMaps;
+
+    [ObservableProperty]
+    private float longitudeMaps;
 
 
 
@@ -46,6 +63,9 @@ public partial class AddDeviceViewModel : BaseViewModel
     [RelayCommand]
     private async Task CancelPressed()
     {
+        Debug.WriteLine(LatitudeMaps);
+        Debug.WriteLine(LongitudeMaps);
+
         // resets the device input fields and navigates back to the home page
         Reset();
         await Shell.Current.GoToAsync("///HomePage");
@@ -100,9 +120,9 @@ public partial class AddDeviceViewModel : BaseViewModel
         DeviceData deviceData = new DeviceData
         {
             Id = IdText,
-            DisplayName = "NOGET HER!",
-            Latitude = 54.9130415,
-            Longitude = 9.77896211
+            DisplayName = NameText,
+            Latitude = LatitudeMaps,
+            Longitude = LongitudeMaps
         };
 
 
