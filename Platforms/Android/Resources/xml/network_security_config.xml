@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Network security configuration to allow cleartext (HTTP) traffic.
+  
+  This setup permits HTTP connections to all domains/IPs,
+  enabling access to:
+    - Android emulator localhost via 10.0.2.2
+    - Other machines on the local network (e.g., classmates' PCs)
+  
+  WARNING: This is intended for development and testing purposes only.
+  For production, use HTTPS and/or restrict allowed domains for better security.
+-->
+
+<network-security-config>
+	<base-config cleartextTrafficPermitted="true" />
+</network-security-config>

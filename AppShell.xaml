@@ -7,6 +7,8 @@
 	xmlns:views="clr-namespace:Hestia_Maui.Views"
 	Title="Hestia">
 
+
+   
     <!-- Internal pages – not shown in the flyout menu -->
     <ShellContent 
         Route="UrlOrganisationPage"
@@ -16,37 +18,36 @@
     <ShellContent 
         Route="SignInPage"
         ContentTemplate="{DataTemplate views:SignInPage}"
-        Shell.NavBarIsVisible="False" />        
+        Shell.NavBarIsVisible="False" />
 
     <!-- Flyout menu items -->
-    <FlyoutItem Title="Home" Icon="icon_home.png">
-        <ShellContent
-            Title="Home"
+        <FlyoutItem Title="Home" Icon="icon_home.png">
+            <ShellContent
             ContentTemplate="{DataTemplate views:HomePage}" 
             Route="HomePage"/>
-    </FlyoutItem>
+        </FlyoutItem>
 
-    <FlyoutItem Title="Devices" Icon="icon_device.png">
-        <ShellContent
+        <FlyoutItem Title="Devices" Icon="icon_device.png">
+            <ShellContent
             Title="Devices:"
             ContentTemplate="{DataTemplate views:DevicesPage}" 
             Route="DevicesPage"/>
-    </FlyoutItem>
+        </FlyoutItem>
 
-    <FlyoutItem Title="Add Device" Icon="icon_add.png">
-        <ShellContent
+        <FlyoutItem Title="Add Device" Icon="icon_add.png">
+            <ShellContent
             ContentTemplate="{DataTemplate views:AddDevicePage}" 
             Route="AddDevicePage"/>
-    </FlyoutItem>
+        </FlyoutItem>
 
-    <FlyoutItem Title="Map" Icon="icon_map.png">
-        <ShellContent
+        <FlyoutItem Title="Map" Icon="icon_map.png">
+            <ShellContent
             Title="Device Locations:"
             ContentTemplate="{DataTemplate views:MapPage}" 
             Route="MapPage"/>
-    </FlyoutItem>
+        </FlyoutItem>
 
-    <!-- Logout button placed at the bottom of the flyout menu -->
+        <!-- Logout button placed at the bottom of the flyout menu -->
     <MenuItem
         Text="Logout"
         IconImageSource="icon_logout.png"

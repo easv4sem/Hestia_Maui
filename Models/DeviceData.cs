@@ -10,8 +10,8 @@ namespace Hestia_Maui.Models
     {
         public string Id { get; set; }
         public string DisplayName { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public float Latitude { get; set; }
+        public float Longitude { get; set; }
 
     }
 }

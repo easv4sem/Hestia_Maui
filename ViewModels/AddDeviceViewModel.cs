@@ -16,7 +16,7 @@ public partial class AddDeviceViewModel : BaseViewModel
     
     [ObservableProperty]
     public string idPlaceholder = "AA:BB:CC:00:00:11";
-    
+
     [ObservableProperty]
     public string entryNameHeador = " Device name:";
 
@@ -74,7 +74,7 @@ public partial class AddDeviceViewModel : BaseViewModel
 
     /// <summary>
     /// Command handler for the "OK" button.
-    /// Checks for a valid session cookie and posts the device data.
+    /// Checks for a valid session cookie and puts the device data.
     /// If the session cookie is missing or expired, navigates to SignInPage.
     /// If success - resets input and navigates to HomePage.
     /// </summary>
@@ -89,6 +89,7 @@ public partial class AddDeviceViewModel : BaseViewModel
 
             if (!isUpdatet)
             {
+                WeakReferenceMessenger.Default.Send(new InfoMessage("The device wasn't updatet."));
                 Debug.WriteLine("Wasn't updated");
                 return;
             }
@@ -110,14 +111,14 @@ public partial class AddDeviceViewModel : BaseViewModel
     /// <summary>
     /// Sends the current device data to the API.
     /// Validates that all required data is present before sending.
-    /// Returns true if the post was successful, otherwise false.
+    /// Returns true if the PUT request was successful; false otherwise.
     /// </summary>
-    /// <returns>True if device data was posted successfully; false otherwise.</returns>
     private async Task<bool> PutData()
     {
-        string endpoint = "";
+        //TODO: change!
+        const string endpoint = "api/maui/device"; 
 
-        DeviceData deviceData = new DeviceData
+        var deviceData = new DeviceData
         {
             Id = IdText,
             DisplayName = NameText,
@@ -125,26 +126,32 @@ public partial class AddDeviceViewModel : BaseViewModel
             Longitude = LongitudeMaps
         };
 
-
-        if (deviceData.Id != "" && deviceData.Longitude != 0 && deviceData.Latitude != 0)
+        if (!string.IsNullOrWhiteSpace(deviceData.Id) && deviceData.Latitude != 0 && deviceData.Longitude != 0)
         {
             try
             {
-                return await _apiServices.ApiPostData(endpoint, deviceData);
+                var response = await _apiServices.ApiPutAsync<DeviceData>(endpoint, deviceData);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine("Device updated successfully.");
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine($"Update failed. StatusCode: {response.StatusCode}");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
-
-                Debug.WriteLine($"Error PutData: {ex.Message}");
+                Debug.WriteLine($"Error [PutData]: {ex.Message}");
                 return false;
             }
         }
-        else
-        {
-            Debug.WriteLine("Some device data are missing...");
-            return false;
-        }
 
+        Debug.WriteLine("Missing or invalid device data.");
+        return false;
     }
 
 

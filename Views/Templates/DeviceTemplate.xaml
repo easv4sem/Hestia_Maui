@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
+    
+                <!-- Namespace for value converters used in this view -->
+                <!-- Binds the DeviceDisplayProps model to this template -->
 <ContentView    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                 xmlns:models="clr-namespace:Hestia_Maui.Models"
@@ -6,6 +9,7 @@
                 x:Class="Hestia_Maui.Views.Templates.DeviceTemplate"
                 x:DataType="models:DeviceDisplayProps">
 
+    <!-- Resource to convert boolean heartbeat to icon depending on state -->
     <ContentView.Resources>
         <ResourceDictionary>
             <converters:HeartbeatToIconConverter x:Key="HeartbeatToIconConverter" />
@@ -15,6 +19,8 @@
 
     <HorizontalStackLayout Padding="10">
 
+        <!-- Binds Image Source to HasHeartbeat and converts it to an icon using HeartbeatToIconConverter:
+             green icon if true, red icon otherwise -->
         <Image Source="{Binding HasHeartbeat, Converter={StaticResource HeartbeatToIconConverter}}" HeightRequest="30" Margin="10,0,0,0" />
 
         <VerticalStackLayout Margin="20,10,0,10">

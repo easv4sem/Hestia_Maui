@@ -2,6 +2,9 @@
 {
     class HeartbeatToIconConverter : IValueConverter
     {
+        /// <summary>
+        /// Converts a boolean heartbeat value to an icon filename
+        /// </summary>
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is bool hasHeartbeat)

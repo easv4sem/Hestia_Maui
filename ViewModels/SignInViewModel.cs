@@ -21,15 +21,21 @@ public partial class SignInViewModel : BaseViewModel
     public string btnLoginText = "Login";
 
     [ObservableProperty]
-    public string emailPlaceholder = "example@google.com";
-    
+    public string labelUsername = "Username";
+
+    [ObservableProperty]
+    public string usernamePlaceholder = "Example123";
+
+    [ObservableProperty]
+    public string labelPassword = "Password";
+
     [ObservableProperty]
     public string passwordPlaceholder = "**********";
 
 
     // two-way bound property: UI and ViewModel update each other
     [ObservableProperty]
-    public string email = "";
+    public string username = "";
     
     [ObservableProperty]
     public string password = "";
@@ -47,7 +53,7 @@ public partial class SignInViewModel : BaseViewModel
 
 
     // TODO: REMOVE AGAIN!
-    public string cookieString = "";
+    public string cookieString = "banankage";
 
 
     /// <summary>
@@ -73,21 +79,24 @@ public partial class SignInViewModel : BaseViewModel
     [RelayCommand]
     private async Task Login()
     {
-        if (string.IsNullOrEmpty(Email))
+        if (string.IsNullOrEmpty(Username))
         {
             // publish an ErrorMessage which NotificationService is subscribed to
-            WeakReferenceMessenger.Default.Send(new ErrorMessage("Please enter an email"));
+            WeakReferenceMessenger.Default.Send(new ErrorMessage("Please enter your username"));
+            return;
         } 
         
-        else if (string.IsNullOrEmpty(Password))
+        if (string.IsNullOrEmpty(Password))
         {
             // publish an ErrorMessage which NotificationService is subscribed to
             WeakReferenceMessenger.Default.Send(new ErrorMessage("Please enter password"));
+            return;
         }
         
-        else
+        bool isLoggedIn = await LoginToApp();
+
+        if (isLoggedIn)
         {
-            bool isLoggedIn = await LoginToApp();
             // saves session cookie in encrypted device storage
             await SecureStorage.SetAsync("session_cookie", cookieString);
 
@@ -95,21 +104,58 @@ public partial class SignInViewModel : BaseViewModel
             Reset();
             await Shell.Current.GoToAsync("///HomePage");
         }
+        else
+        {
+            Debug.WriteLine("Login failed");
+            WeakReferenceMessenger.Default.Send(new ErrorMessage("Login failed. Please check your credentials."));
+        }
+        
     }
 
 
     /// <summary>
-    /// 
+    /// Attempts to log in the user with the provided Username and Password.
+    /// Sends login data to the API and processes the response.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>True if login succeeded and session cookie retrieved; otherwise false</returns>
     private async Task<bool> LoginToApp()
     {
         LoginData loginData = new LoginData
         {
-
+            Username = Username,
+            Password = Password
         };
 
-        return true;
+        try
+        {
+            var response = await _apiServices.ApiPostAsync<LoginData>("api/login", loginData);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Extract cookie or token from response headers or content as appropriate
+                // Example assuming a session cookie is returned in a header:
+                if (response.Headers.TryGetValues("Set-Cookie", out var cookies))
+                {
+                    cookieString = cookies.FirstOrDefault() ?? string.Empty;
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine("No session cookie found in response");
+                    return false;
+                }
+            }
+            else
+            {
+                Debug.WriteLine($"Login failed with status code: {response.StatusCode}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error during login: {ex.Message}");
+            return false;
+        }
     }
 
 
@@ -118,7 +164,7 @@ public partial class SignInViewModel : BaseViewModel
     /// </summary>
     private void Reset()
     {
-        Email = string.Empty;
+        Username = string.Empty;
         Password = string.Empty;
     }
 }

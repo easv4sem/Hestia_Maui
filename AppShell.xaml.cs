@@ -27,6 +27,9 @@ public partial class AppShell : Shell
             // removes the stored session cookie from secure storage
             SecureStorage.Remove("session_cookie");
 
+            // closes the flyout menu if it's open
+            Shell.Current.FlyoutIsPresented = false;
+
             // navigates to login page 
             await Shell.Current.GoToAsync("///UrlOrganisationPage");
         }

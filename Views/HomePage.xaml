@@ -1,8 +1,63 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 xmlns:vm="clr-namespace:Hestia_Maui.ViewModels"
-			 x:Class="Hestia_Maui.Views.HomePage"
-			 x:DataType="vm:HomeViewModel">
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Hestia_Maui.ViewModels"
+             x:Class="Hestia_Maui.Views.HomePage"
+             x:DataType="vm:HomeViewModel">
 
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto, *"
+              Padding="50"
+              RowSpacing="30">
+
+            <!-- Top bar: Welcome text and logo -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto, Auto"
+                  ColumnSpacing="10"
+                  HorizontalOptions="Center"
+                  VerticalOptions="Start">
+
+                <!-- Stack with two lines of text -->
+                <VerticalStackLayout Grid.Column="0"
+                                     Spacing="0"
+                                     VerticalOptions="Center">
+                    <Label Text="{Binding LabelHeader}"
+                           FontSize="40"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                    <Label Text="{Binding LabelLine}"
+                           FontSize="28"
+                           HorizontalOptions="Center" 
+                           Margin="55,0,0,0"/>
+                </VerticalStackLayout>
+
+                <!-- Logo -->
+                <Image Grid.Column="1"
+                       Source="logo.png"
+                       HeightRequest="140"
+                       VerticalOptions="Center" />
+            </Grid>
+
+            <!-- Centered buttons -->
+            <VerticalStackLayout Grid.Row="1"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Start"
+                                 Spacing="25"
+                                 Margin="0,40,0,60">
+
+                <Button Text="{Binding BtnSeeDevicesText}"
+                        Command="{Binding SeeDevicePressedCommand}"
+                        BackgroundColor="#f67d22"
+                        WidthRequest="250"
+                        HeightRequest="100" />
+
+                <Button Text="{Binding BtnAddDevicesText}"
+                        Command="{Binding AddDevicePressedCommand}"
+                        BackgroundColor="#f67d22"
+                        WidthRequest="250"
+                        HeightRequest="100" />
+
+            </VerticalStackLayout>
+
+        </Grid>
+    </ContentPage.Content>
 </ContentPage>
