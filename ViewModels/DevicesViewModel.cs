@@ -95,7 +95,7 @@ namespace Hestia_Maui.ViewModels
             try
             {
                 Debug.WriteLine(">>> LoadDevicesAsync CALLED");
-                var devices = await _apiService.ApiGetAll<DeviceDTO>("api/devices");
+                var devices = await _apiService.ApiGetAll<DeviceDTO>("api/devices/");
                 var sortedDevices = DeviceUtility.ConvertAndSortActiveDevices(devices);
 
                 ActiveDevices.Clear();

@@ -30,7 +30,7 @@
                                  Spacing="10"
                                  HorizontalOptions="FillAndExpand">
                 <Label Text="{Binding LabelText}" Margin="0,0,0,0"/>
-                <Entry Text="{Binding OrganisationUrl}"
+                <Entry Text="{Binding EnteredOrganisationUrl}"
                        Placeholder="{Binding UrlPlaceholder}"
                        Margin="0,10,0,0" />
             </VerticalStackLayout>

@@ -27,7 +27,7 @@ public partial class UrlOrganisationViewModel : BaseViewModel
 
     // two-way bound property: UI and ViewModel update each other
     [ObservableProperty]
-    public string organisationUrl = "";
+    public string enteredOrganisationUrl = "";
 
 
 
@@ -51,7 +51,7 @@ public partial class UrlOrganisationViewModel : BaseViewModel
     [RelayCommand]
     private async Task NextPressed()
     {
-        if (string.IsNullOrEmpty(OrganisationUrl))
+        if (string.IsNullOrEmpty(EnteredOrganisationUrl))
         {
             // publish an ErrorMessage which NotificationService is subscribed to
             WeakReferenceMessenger.Default.Send(new ErrorMessage("Please enter an organization URL"));
@@ -59,7 +59,7 @@ public partial class UrlOrganisationViewModel : BaseViewModel
         else
         {
             // saves organisation url in encrypted device storage
-            await SecureStorage.SetAsync("organisation_url", OrganisationUrl);
+            await SecureStorage.SetAsync("organisation_url", EnteredOrganisationUrl);
 
             // resets entered organisation url and navigates to sign in page
             Reset();
@@ -74,6 +74,6 @@ public partial class UrlOrganisationViewModel : BaseViewModel
     /// </summary>
     private void Reset()
     {
-        OrganisationUrl = string.Empty;
+        EnteredOrganisationUrl = string.Empty;
     }
 }

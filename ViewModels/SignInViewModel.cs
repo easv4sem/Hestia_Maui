@@ -35,10 +35,10 @@ public partial class SignInViewModel : BaseViewModel
 
     // two-way bound property: UI and ViewModel update each other
     [ObservableProperty]
-    public string username = "";
+    public string enteredUsername = "";
     
     [ObservableProperty]
-    public string password = "";
+    public string enteredPassword = "";
 
 
 
@@ -79,14 +79,14 @@ public partial class SignInViewModel : BaseViewModel
     [RelayCommand]
     private async Task Login()
     {
-        if (string.IsNullOrEmpty(Username))
+        if (string.IsNullOrEmpty(EnteredUsername))
         {
             // publish an ErrorMessage which NotificationService is subscribed to
             WeakReferenceMessenger.Default.Send(new ErrorMessage("Please enter your username"));
             return;
         } 
         
-        if (string.IsNullOrEmpty(Password))
+        if (string.IsNullOrEmpty(EnteredPassword))
         {
             // publish an ErrorMessage which NotificationService is subscribed to
             WeakReferenceMessenger.Default.Send(new ErrorMessage("Please enter password"));
@@ -122,13 +122,13 @@ public partial class SignInViewModel : BaseViewModel
     {
         LoginData loginData = new LoginData
         {
-            Username = Username,
-            Password = Password
+            Username = EnteredUsername,
+            Password = EnteredPassword
         };
 
         try
         {
-            var response = await _apiServices.ApiPostAsync<LoginData>("api/login", loginData);
+            var response = await _apiServices.ApiPostAsync<LoginData>("api/user/login", loginData);
 
             if (response.IsSuccessStatusCode)
             {
@@ -164,7 +164,7 @@ public partial class SignInViewModel : BaseViewModel
     /// </summary>
     private void Reset()
     {
-        Username = string.Empty;
-        Password = string.Empty;
+        EnteredUsername = string.Empty;
+        EnteredPassword = string.Empty;
     }
 }

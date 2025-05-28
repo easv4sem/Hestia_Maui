@@ -116,7 +116,7 @@ public partial class AddDeviceViewModel : BaseViewModel
     private async Task<bool> PutData()
     {
         //TODO: change!
-        const string endpoint = "api/maui/device"; 
+        const string endpoint = "api/device/"; 
 
         var deviceData = new DeviceData
         {

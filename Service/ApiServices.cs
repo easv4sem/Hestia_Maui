@@ -9,17 +9,16 @@ namespace Hestia_Maui.Service
     {
         private const string _contentTypeJson = "application/json";
 
-        private readonly string _localBaseUrl = "http://10.0.2.2:8888/";
+        private readonly string _localBaseUrl = "http://10.176.160.114:3000/";
         private readonly HttpClient _httpClient;
         private bool _isConfigured;
+        private CookieContainer _cookieContainer; 
 
         public ApiServices()
         {
             _httpClient = new HttpClient();
             
         }
-
-
 
 
         private async Task InitializeBaseUrlAsync()
