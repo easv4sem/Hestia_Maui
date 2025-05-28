@@ -2,6 +2,7 @@
 using Hestia_Maui.Models;
 using CommunityToolkit.Mvvm.Messaging;
 using Hestia_Maui.MessageTypes;
+using System.Net;
 
 namespace Hestia_Maui.ViewModels;
 
@@ -85,23 +86,24 @@ public partial class AddDeviceViewModel : BaseViewModel
 
         if (!string.IsNullOrEmpty(cookie))
         {
-            bool isUpdatet = await PutData();
+            bool isUpdated = await PutData();
 
-            if (!isUpdatet)
+            if (!isUpdated)
             {
-                WeakReferenceMessenger.Default.Send(new InfoMessage("The device wasn't updatet."));
-                Debug.WriteLine("Wasn't updated");
+                WeakReferenceMessenger.Default.Send(new InfoMessage("Could not update the device. Please try again later"));
+                Debug.WriteLine("Device update failed.");
                 return;
             }
 
-            // resets the device input fields and navigates back to the home page
+            // Reset input fields og naviger til HomePage hvis opdatering lykkedes
             Reset();
+            WeakReferenceMessenger.Default.Send(new InfoMessage("Device added successfully"));
             await Shell.Current.GoToAsync("///HomePage");
         }
         else
         {
             WeakReferenceMessenger.Default.Send(new InfoMessage("Your session has expired. Please log in again to continue."));
-            Debug.WriteLine("Cookie is expired");
+            Debug.WriteLine("Session cookie is missing or expired.");
             await Shell.Current.GoToAsync("///SignInPage");
         }
 
@@ -116,7 +118,7 @@ public partial class AddDeviceViewModel : BaseViewModel
     private async Task<bool> PutData()
     {
         //TODO: change!
-        const string endpoint = "api/device/"; 
+        const string endpoint = "api/device/";
 
         var deviceData = new DeviceData
         {
@@ -126,6 +128,7 @@ public partial class AddDeviceViewModel : BaseViewModel
             Longitude = LongitudeMaps
         };
 
+        // Tjekker at data er gyldigt
         if (!string.IsNullOrWhiteSpace(deviceData.Id) && deviceData.Latitude != 0 && deviceData.Longitude != 0)
         {
             try
@@ -161,6 +164,7 @@ public partial class AddDeviceViewModel : BaseViewModel
     private void Reset()
     {
         IdText = string.Empty;
+        NameText = string.Empty;
     }
 
 }

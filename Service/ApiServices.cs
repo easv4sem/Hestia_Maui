@@ -1,19 +1,35 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using Hestia_Maui.Models;
 using System.Text;
 using Hestia_Maui.MessageTypes;
 using System.Net;
+using CommunityToolkit.Maui.Converters;
 
 namespace Hestia_Maui.Service
 {
     class ApiServices
     {
+        private HttpClient _httpClient;
+        private CookieContainer _cookieContainer;
         private const string _contentTypeJson = "application/json";
+        private bool _hasBaseUrl = false;
+        private bool _httpClientIsConfigured = false;
 
-        private readonly string _localBaseUrl = "http://10.176.160.114:3000/";
-        private readonly HttpClient _httpClient;
-        private bool _isConfigured;
-        private CookieContainer _cookieContainer; 
+        // NOTE ON NETWORKING WITH ANDROID EMULATOR:
+        //
+        // When running the app on an Android emulator, 'localhost' (127.0.0.1) refers to the emulator itself,
+        // not the host development machine (your PC).
+        //
+        // To reach a server running on your development machine from the emulator, you must use the special IP 
+        // address '10.0.2.2', which is routed by the emulator to your host machine's localhost.
+        //
+        // Therefore:
+        // - For an API running on your local development machine, use "http://10.0.2.2:<port>" as the base URL.
+        // - For an API running on another machine on the same network (e.g., a colleague’s PC), use that machine’s
+        //   local network IP address like "http://192.168.x.x:<port>".
 
+        private string _baseUrl;
+
+        
         public ApiServices()
         {
             _httpClient = new HttpClient();
@@ -23,56 +39,74 @@ namespace Hestia_Maui.Service
 
         private async Task InitializeBaseUrlAsync()
         {
-            if (_isConfigured) return;
+            if (_hasBaseUrl) return;
 
             try
             {
-                var baseUrl = await SecureStorage.GetAsync("organisation_url");
+                var organizationUrl = await SecureStorage.GetAsync("organisation_url");
 
-                if (string.IsNullOrEmpty(baseUrl))
+                if (string.IsNullOrEmpty(organizationUrl))
                 {
                     Debug.WriteLine("baseUrl is null or empty");
                     throw new Exception("Organization URL is missing");
                 }
 
-                if (!baseUrl.EndsWith("/"))
+                if (!organizationUrl.EndsWith("/"))
                 {
-                    baseUrl += "/";
+                    organizationUrl += "/";
                 }
 
-
-                Debug.WriteLine($"BaseUrl: {baseUrl}");
-                // Proof of concept: This logs the base URL retrieved from secure storage,
-                // confirming that the user-entered URL (set at app startup) is correctly saved 
-                // and retrieved, ensuring the app points to the intended organization's API endpoint.
-
-
-
-                // NOTE ON NETWORKING WITH ANDROID EMULATOR:
-                //
-                // When running the app on an Android emulator, 'localhost' (127.0.0.1) refers to the emulator itself,
-                // not the host development machine (your PC).
-                //
-                // To reach a server running on your development machine from the emulator, you must use the special IP 
-                // address '10.0.2.2', which is routed by the emulator to your host machine's localhost.
-                //
-                // Therefore:
-                // - For an API running on your local development machine, use "http://10.0.2.2:<port>" as the base URL.
-                // - For an API running on another machine on the same network (e.g., a colleague’s PC), use that machine’s
-                //   local network IP address like "http://192.168.x.x:<port>".
-
-                _httpClient.BaseAddress = new Uri($"{_localBaseUrl}");
-                _isConfigured = true;
+                _baseUrl = organizationUrl;
+                _hasBaseUrl = true;
+                Debug.WriteLine($"BaseUrl set to: {_baseUrl}");
 
             }
-            catch (Exception ex) { 
-            
+            catch (Exception ex)
+            {
                 Debug.WriteLine($"Error [InitializaBaseUrlAsync]: {ex}");
-                WeakReferenceMessenger.Default.Send(new ErrorMessage("Couldn't get connection to server"));
             }
 
         }
 
+
+        
+
+        
+        private async Task InitializeHttpClientAsync()
+        {
+            if (_httpClientIsConfigured) return;
+
+            _cookieContainer = new CookieContainer();
+
+            try
+            {
+                var authCookie = await SecureStorage.GetAsync("session_cookie");
+
+                if (!string.IsNullOrWhiteSpace(authCookie) && _hasBaseUrl)
+                {
+                    var baseUri = new Uri(_baseUrl);
+                    _cookieContainer.Add(baseUri, new Cookie("user", authCookie));
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting authCookie: {ex}");
+            }
+
+
+            var handler = new HttpClientHandler
+            {
+                CookieContainer = _cookieContainer
+            };
+
+            _httpClient.Dispose(); 
+            _httpClient = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(_baseUrl)
+            };
+
+            _httpClientIsConfigured = true;
+        }
 
 
 
@@ -87,15 +121,38 @@ namespace Hestia_Maui.Service
         {
             try
             {
-                if (!_isConfigured)
-                {
-                    await InitializeBaseUrlAsync();
-                }
-
                 var json = JsonSerializer.Serialize(data);
                 var content = new StringContent(json, Encoding.UTF8, _contentTypeJson);
 
-                return await _httpClient.PostAsync(endpoint, content);
+                HttpResponseMessage response;
+
+                if (!_hasBaseUrl)
+                {
+                    await InitializeBaseUrlAsync();
+                    response = await _httpClient.PostAsync($"{_baseUrl}{endpoint}", content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Debug.WriteLine($"Couldn't post with base Url");
+                    }
+                }
+                else
+                {
+                    if (!_httpClientIsConfigured)
+                    {
+                        await InitializeHttpClientAsync();
+                    }
+
+                    response = await _httpClient.PostAsync(endpoint, content);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Debug.WriteLine($"Failed to post with configured http client");
+                    }
+                }
+                
+                return response;
+                
             }
             catch (Exception ex)
             {
@@ -116,15 +173,26 @@ namespace Hestia_Maui.Service
         {
             try
             {
-                if (!_isConfigured)
+                if (!_httpClientIsConfigured)
                 {
-                    await InitializeBaseUrlAsync();
+                    Debug.WriteLine("HttpClient is not configured");
+                    return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+                    {
+                        ReasonPhrase = "HttpClient is not configured"
+                    };
                 }
 
                 var json = JsonSerializer.Serialize(data);
                 var content = new StringContent(json, Encoding.UTF8, _contentTypeJson);
 
-                return await _httpClient.PutAsync(endpoint, content);
+                var response = await _httpClient.PutAsync(endpoint, content);
+
+                if (!response.IsSuccessStatusCode) 
+                {
+                    Debug.WriteLine("Failed to update");
+                }
+
+                return response;
             }
             catch (Exception ex)
             {
@@ -144,20 +212,26 @@ namespace Hestia_Maui.Service
         {
             try
             {
-                if (!_isConfigured)
+                if (!_httpClientIsConfigured)
                 {
-                    await InitializeBaseUrlAsync();
+                    Debug.WriteLine("HttpClient is not configured");
+                    return new List<T>();
                 }
 
                 var response = await _httpClient.GetAsync(endpoint);
-                response.EnsureSuccessStatusCode();
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine($"Error. Status code: {response.StatusCode}");
+                    return new List<T>();
+                }
 
                 var json = await response.Content.ReadAsStringAsync();
 
-
-                var items = JsonSerializer.Deserialize<List<T>>(json, new JsonSerializerOptions {
+                var items = JsonSerializer.Deserialize<List<T>>(json, new JsonSerializerOptions
+                {
                     PropertyNameCaseInsensitive = true
-                    });
+                });
 
                 if (items == null)
                 {
@@ -180,5 +254,6 @@ namespace Hestia_Maui.Service
         }
 
     }
+
 }
 

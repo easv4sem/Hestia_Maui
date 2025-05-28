@@ -43,7 +43,8 @@ public partial class SignInViewModel : BaseViewModel
 
 
     // URL endpoint for posting login data to the API
-    private readonly string _apiPutLoginEndpoint = "https://8c7567d1-8477-484d-ab9c-e88dcf0aa29e.mock.pstmn.io/api/maui_post";
+    private readonly string _loginEndpoint = "api/user/login";
+    private string cookieString ="Banankage";
     private readonly ApiServices _apiServices;
 
     public SignInViewModel()
@@ -52,8 +53,7 @@ public partial class SignInViewModel : BaseViewModel
     }
 
 
-    // TODO: REMOVE AGAIN!
-    public string cookieString = "banankage";
+    
 
 
     /// <summary>
@@ -92,7 +92,8 @@ public partial class SignInViewModel : BaseViewModel
             WeakReferenceMessenger.Default.Send(new ErrorMessage("Please enter password"));
             return;
         }
-        
+
+        /*
         bool isLoggedIn = await LoginToApp();
 
         if (isLoggedIn)
@@ -109,7 +110,16 @@ public partial class SignInViewModel : BaseViewModel
             Debug.WriteLine("Login failed");
             WeakReferenceMessenger.Default.Send(new ErrorMessage("Login failed. Please check your credentials."));
         }
-        
+        */
+
+
+        // saves session cookie in encrypted device storage
+        await SecureStorage.SetAsync("session_cookie", cookieString);
+
+        // resets entered email and password and navigates to home page
+        Reset();
+        await Shell.Current.GoToAsync("///HomePage");
+
     }
 
 
@@ -128,7 +138,7 @@ public partial class SignInViewModel : BaseViewModel
 
         try
         {
-            var response = await _apiServices.ApiPostAsync<LoginData>("api/user/login", loginData);
+            var response = await _apiServices.ApiPostAsync<LoginData>(_loginEndpoint, loginData);
 
             if (response.IsSuccessStatusCode)
             {
