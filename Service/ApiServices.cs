@@ -3,10 +3,11 @@ using System.Text;
 using Hestia_Maui.MessageTypes;
 using System.Net;
 using CommunityToolkit.Maui.Converters;
+using Hestia_Maui.Interface;
 
 namespace Hestia_Maui.Service
 {
-    class ApiServices
+    public class ApiServices : IApiService
     {
         private HttpClient _httpClient;
         private CookieContainer _cookieContainer;
@@ -81,6 +82,7 @@ namespace Hestia_Maui.Service
             try
             {
                 var authCookie = await SecureStorage.GetAsync("session_cookie");
+                Debug.WriteLine($"Init httpClient: authCookie = {authCookie}");
 
                 if (!string.IsNullOrWhiteSpace(authCookie) && _hasBaseUrl)
                 {
@@ -96,7 +98,8 @@ namespace Hestia_Maui.Service
 
             var handler = new HttpClientHandler
             {
-                CookieContainer = _cookieContainer
+                CookieContainer = _cookieContainer,
+                UseCookies = true
             };
 
             _httpClient.Dispose(); 
@@ -175,11 +178,7 @@ namespace Hestia_Maui.Service
             {
                 if (!_httpClientIsConfigured)
                 {
-                    Debug.WriteLine("HttpClient is not configured");
-                    return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
-                    {
-                        ReasonPhrase = "HttpClient is not configured"
-                    };
+                    await InitializeHttpClientAsync();
                 }
 
                 var json = JsonSerializer.Serialize(data);
@@ -215,10 +214,12 @@ namespace Hestia_Maui.Service
                 if (!_httpClientIsConfigured)
                 {
                     Debug.WriteLine("HttpClient is not configured");
-                    return new List<T>();
+                    await InitializeHttpClientAsync();
                 }
 
+
                 var response = await _httpClient.GetAsync(endpoint);
+
                 
                 if (!response.IsSuccessStatusCode)
                 {

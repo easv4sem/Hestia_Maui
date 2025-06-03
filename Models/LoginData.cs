@@ -2,7 +2,7 @@
 
 namespace Hestia_Maui.Models
 {
-    class LoginData
+    public class LoginData
     {
         [JsonPropertyName("username")]
         public string Username { get; set; }

@@ -3,6 +3,7 @@ using Hestia_Maui.MessageTypes;
 using Hestia_Maui.Models;
 using Hestia_Maui.Models.DTO;
 using Hestia_Maui.Service;
+using Hestia_Maui.Interface;
 using Microsoft.Maui.Dispatching;
 using Microsoft.Maui.Dispatching;
 using System.Net;
@@ -12,6 +13,7 @@ namespace Hestia_Maui.ViewModels
 {
     public partial class DevicesViewModel : BaseViewModel
     {
+        // one-way bound properties: ViewModel updates UI only
         [ObservableProperty]
         public string greenDot = "icon_green_circle.png";
 
@@ -26,11 +28,11 @@ namespace Hestia_Maui.ViewModels
 
 
         public ObservableCollection<DeviceDisplayProps> ActiveDevices { get; } = new();
-        private ApiServices _apiService;
+        private readonly IApiService _apiService;
 
-        public DevicesViewModel()
+        public DevicesViewModel(IApiService apiservice)
         {
-            _apiService = new ApiServices();
+            _apiService = apiservice;
         }
 
 
@@ -39,7 +41,7 @@ namespace Hestia_Maui.ViewModels
         {
             try
             {
-                var devices = await _apiService.ApiGetAll<DeviceDTO>("api/devices");
+                var devices = await _apiService.ApiGetAll<DeviceDTO>("api/devices/");
 
                 if (devices == null || !devices.Any())
                 {

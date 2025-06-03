@@ -11,15 +11,8 @@
 
     <StackLayout>
 
-        <HorizontalStackLayout Padding="15" HorizontalOptions="Center">
-            <Image Source="{Binding GreenDot}" HeightRequest="30"/>
-            <Label Text="{Binding LabelActiveDevice}" VerticalOptions="Center" FontAttributes="Italic"/>
-            <Image Source="{Binding RedDot}" HeightRequest="30" Margin="40,0,0,0"/>
-            <Label Text="{Binding LabelInactiveDevice}" VerticalOptions="Center" FontAttributes="Italic"/>
-        </HorizontalStackLayout>
-        
-        <!-- Displays each device in the Devices collection using the DeviceTemplate -->
-        <ListView ItemsSource="{Binding ActiveDevices}" SelectedItem="{Binding SelectedDevice}" HasUnevenRows="True">
+        <!-- Displays each device in the Active devices collection using the DeviceTemplate -->
+        <ListView ItemsSource="{Binding ActiveDevices}" HasUnevenRows="True">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
@@ -28,6 +21,13 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
+
+        <HorizontalStackLayout Padding="15" HorizontalOptions="Center">
+            <Image Source="{Binding GreenDot}" HeightRequest="30"/>
+            <Label Text="{Binding LabelActiveDevice}" VerticalOptions="Center" FontAttributes="Italic"/>
+            <Image Source="{Binding RedDot}" HeightRequest="30" Margin="40,0,0,0"/>
+            <Label Text="{Binding LabelInactiveDevice}" VerticalOptions="Center" FontAttributes="Italic"/>
+        </HorizontalStackLayout>
+
     </StackLayout>
 </ContentPage>

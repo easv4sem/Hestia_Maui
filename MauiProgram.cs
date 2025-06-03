@@ -1,4 +1,7 @@
-﻿namespace Hestia_Maui;
+﻿using Hestia_Maui.Service;
+using Hestia_Maui.Interface;
+
+namespace Hestia_Maui;
 
 public static class MauiProgram
 {
@@ -29,16 +32,18 @@ public static class MauiProgram
 #endif
 		builder.Services.AddSingleton<UrlOrganisationViewModel>();
 
-		builder.Services.AddSingleton<SignInViewModel>();
+		builder.Services.AddTransient<SignInViewModel>();
 
-		builder.Services.AddSingleton<HomeViewModel>();
+		builder.Services.AddTransient<HomeViewModel>();
 
-		builder.Services.AddSingleton<DevicesViewModel>();
+		builder.Services.AddTransient<DevicesViewModel>();
 
-		builder.Services.AddSingleton<AddDeviceViewModel>();
+		builder.Services.AddTransient<AddDeviceViewModel>();
 
-		builder.Services.AddSingleton<MapViewModel>();
+		builder.Services.AddTransient<MapViewModel>();
 
-		return builder.Build();
+        builder.Services.AddSingleton<IApiService, ApiServices>();
+
+        return builder.Build();
 	}
 }

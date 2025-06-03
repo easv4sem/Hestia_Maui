@@ -2,6 +2,8 @@
 using Hestia_Maui.Models;
 using CommunityToolkit.Mvvm.Messaging;
 using Hestia_Maui.MessageTypes;
+using Hestia_Maui.Interface;
+using System.Text.RegularExpressions;
 
 namespace Hestia_Maui.ViewModels;
 
@@ -44,12 +46,11 @@ public partial class SignInViewModel : BaseViewModel
 
     // URL endpoint for posting login data to the API
     private readonly string _loginEndpoint = "api/user/login";
-    private string cookieString ="Banankage";
-    private readonly ApiServices _apiServices;
+    private readonly IApiService _apiServices;
 
-    public SignInViewModel()
+    public SignInViewModel(IApiService apiService)
     {
-        _apiServices = new ApiServices();
+        _apiServices = apiService;
     }
 
 
@@ -93,41 +94,38 @@ public partial class SignInViewModel : BaseViewModel
             return;
         }
 
-        /*
-        bool isLoggedIn = await LoginToApp();
 
-        if (isLoggedIn)
+        try
         {
-            // saves session cookie in encrypted device storage
-            await SecureStorage.SetAsync("session_cookie", cookieString);
 
-            // resets entered email and password and navigates to home page
-            Reset();
-            await Shell.Current.GoToAsync("///HomePage");
+            bool isLoggedIn = await LoginToApp();
+
+            if (isLoggedIn)
+            {
+                // saves session cookie in encrypted device storage
+                //await SecureStorage.SetAsync("session_cookie", cookieString);
+
+                // resets entered email and password and navigates to home page
+                Reset();
+                await Shell.Current.GoToAsync("///HomePage");
+            }
+            else
+            {
+                Debug.WriteLine("Login failed");
+                WeakReferenceMessenger.Default.Send(new ErrorMessage("Login failed. Please check your credentials."));
+            }
         }
-        else
-        {
-            Debug.WriteLine("Login failed");
-            WeakReferenceMessenger.Default.Send(new ErrorMessage("Login failed. Please check your credentials."));
+        catch (Exception ex) { 
+        
+            Debug.WriteLine($"Error during login: {ex}");
+            WeakReferenceMessenger.Default.Send(new ErrorMessage("Couldn't login. Please try again later"));
         }
-        */
-
-
-        // saves session cookie in encrypted device storage
-        await SecureStorage.SetAsync("session_cookie", cookieString);
-
-        // resets entered email and password and navigates to home page
-        Reset();
-        await Shell.Current.GoToAsync("///HomePage");
-
     }
 
 
-    /// <summary>
-    /// Attempts to log in the user with the provided Username and Password.
-    /// Sends login data to the API and processes the response.
-    /// </summary>
-    /// <returns>True if login succeeded and session cookie retrieved; otherwise false</returns>
+
+
+
     private async Task<bool> LoginToApp()
     {
         LoginData loginData = new LoginData
@@ -142,12 +140,25 @@ public partial class SignInViewModel : BaseViewModel
 
             if (response.IsSuccessStatusCode)
             {
-                // Extract cookie or token from response headers or content as appropriate
-                // Example assuming a session cookie is returned in a header:
                 if (response.Headers.TryGetValues("Set-Cookie", out var cookies))
                 {
-                    cookieString = cookies.FirstOrDefault() ?? string.Empty;
-                    return true;
+                    string fullCookie = cookies.FirstOrDefault();
+                    Debug.WriteLine($"Raw Set-Cookie header: {fullCookie}");
+
+                    // Parse cookie value using Regex
+                    // Example header: user=abcdef12345; Path=/; HttpOnly; SameSite=Lax
+                    string extractedValue = ExtractCookieValue(fullCookie, "user");
+                    if (!string.IsNullOrEmpty(extractedValue))
+                    {
+                        await SecureStorage.SetAsync("session_cookie", extractedValue);
+                        Debug.WriteLine($"Stored cookie value: {extractedValue}");
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("No valid 'user' cookie found in header.");
+                        return false;
+                    }
                 }
                 else
                 {
@@ -168,6 +179,22 @@ public partial class SignInViewModel : BaseViewModel
         }
     }
 
+    /// <summary>
+    /// Extracts the cookie value for the given cookie name from a Set-Cookie header string.
+    /// </summary>
+    private string ExtractCookieValue(string setCookieHeader, string cookieName)
+    {
+        if (string.IsNullOrEmpty(setCookieHeader) || string.IsNullOrEmpty(cookieName))
+            return string.Empty;
+
+        // Use Regex to extract the cookie value
+        var match = Regex.Match(setCookieHeader, $@"{cookieName}=([^;]+)");
+        return match.Success ? match.Groups[1].Value : string.Empty;
+    }
+
+
+
+
 
     /// <summary>
     /// Resets the login input fields
@@ -177,4 +204,5 @@ public partial class SignInViewModel : BaseViewModel
         EnteredUsername = string.Empty;
         EnteredPassword = string.Empty;
     }
+
 }

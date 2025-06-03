@@ -31,7 +31,7 @@ public partial class AppShell : Shell
             Shell.Current.FlyoutIsPresented = false;
 
             // navigates to login page 
-            await Shell.Current.GoToAsync("///UrlOrganisationPage");
+            await Shell.Current.GoToAsync("///SignInPage");
         }
     }
 }

@@ -3,6 +3,7 @@ using Hestia_Maui.Models;
 using CommunityToolkit.Mvvm.Messaging;
 using Hestia_Maui.MessageTypes;
 using System.Net;
+using Hestia_Maui.Interface;
 
 namespace Hestia_Maui.ViewModels;
 
@@ -48,11 +49,11 @@ public partial class AddDeviceViewModel : BaseViewModel
 
 
 
-    private readonly ApiServices _apiServices;
+    private readonly IApiService _apiServices;
 
-    public AddDeviceViewModel()
+    public AddDeviceViewModel(IApiService apiservice)
     {
-        _apiServices = new ApiServices();
+        _apiServices = apiservice;
     }
 
 
@@ -82,6 +83,14 @@ public partial class AddDeviceViewModel : BaseViewModel
     [RelayCommand]
     private async Task OkPressed()
     {
+        if (string.IsNullOrEmpty(IdText) || string.IsNullOrEmpty(NameText) || LatitudeMaps == 0 || LongitudeMaps == 0) {
+            
+            Debug.WriteLine("Some credentials are missing creating device");
+            WeakReferenceMessenger.Default.Send(new InfoMessage("Please check your credentials - some are missing"));
+            return;
+        }
+
+
         var cookie = await SecureStorage.GetAsync("session_cookie");
 
         if (!string.IsNullOrEmpty(cookie))
@@ -90,7 +99,7 @@ public partial class AddDeviceViewModel : BaseViewModel
 
             if (!isUpdated)
             {
-                WeakReferenceMessenger.Default.Send(new InfoMessage("Could not update the device. Please try again later"));
+                WeakReferenceMessenger.Default.Send(new InfoMessage("Could not add the device. Please try again later"));
                 Debug.WriteLine("Device update failed.");
                 return;
             }
@@ -117,8 +126,7 @@ public partial class AddDeviceViewModel : BaseViewModel
     /// </summary>
     private async Task<bool> PutData()
     {
-        //TODO: change!
-        const string endpoint = "api/device/";
+        const string endpoint = "api/devices";
 
         var deviceData = new DeviceData
         {
@@ -128,12 +136,18 @@ public partial class AddDeviceViewModel : BaseViewModel
             Longitude = LongitudeMaps
         };
 
-        // Tjekker at data er gyldigt
+        // checks data
         if (!string.IsNullOrWhiteSpace(deviceData.Id) && deviceData.Latitude != 0 && deviceData.Longitude != 0)
         {
             try
             {
-                var response = await _apiServices.ApiPutAsync<DeviceData>(endpoint, deviceData);
+                var requestWrapper = new PutDeviceRequest 
+                {
+                    Device = deviceData
+                };
+
+
+                var response = await _apiServices.ApiPutAsync<PutDeviceRequest>(endpoint, requestWrapper);
 
                 if (response.IsSuccessStatusCode)
                 {
